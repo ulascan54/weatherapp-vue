@@ -2,8 +2,8 @@
 
 See [this app referance](https://www.youtube.com/watch?v=5Uxe_MNd6go&list=PLjh-ViK0OwrJgpd1yEhHYgRqNhLViKKZd).
 
-<img src"./src/images/1.png" />
-<img src"./src/images/2.png" />
+![.](src/images/1.png)
+![.](src/images/2.png)
 
 ## Project setup
 
