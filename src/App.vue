@@ -1,22 +1,23 @@
 <template>
   <div id="main">
     <div class="container my-5">
-      <h1 class="title text-center">Weather in</h1>
-      <form class="search-location">
+      <h1 class="title text-center">Hava Durumu</h1>
+      <form class="search-location" v-on:submit.prevent="getWeather">
         <input
           type="text"
           class="form-control text-muted form-rounded p-4 shadow-sm"
-          placeholder="What City?"
+          placeholder="Hangi Şehir?"
+          v-model="citySearch"
           autocomplete="off"
         />
       </form>
-      <div class="card rounded my-3 shadow-lg back-card overflow-hidden">
+      <div class="card  my-3 shadow-lg back-card overflow-hidden">
         <!-- Top of card starts here -->
         <div class="card-top text-center" style="margin-bottom: 15rem">
           <div class="city-name my-3">
-            <p>İstanbul</p>
+            <p>{{ weather.cityName }}</p>
             <span>...</span>
-            <p class="">NG</p>
+            <p class="">{{ weather.country }}</p>
           </div>
         </div>
         <!-- top of card ends here -->
@@ -27,19 +28,19 @@
           <div class="card-mid">
             <div class="row">
               <div class="col-12 text-center temp">
-                <span>20&deg;C</span>
-                <p class="my-4">Bulutlar heryerde</p>
+                <span>{{ weather.temperature }}&deg;C</span>
+                <p class="my-4">{{ weather.description }}</p>
               </div>
             </div>
             <div class="row">
               <div class="col d-flex justify-content-between px-5 mx-5">
                 <p>
                   <img src="" alt="" />
-                  18&deg;C
+                  {{ weather.lowTemp }}&deg;C
                 </p>
                 <p>
                   <img src="" alt="" />
-                  25}&deg;C
+                  {{ weather.highTemp }}&deg;C
                 </p>
               </div>
             </div>
@@ -49,12 +50,12 @@
           <!-- card bottom starts here -->
           <div class="card-bottom px-5 py-4 row">
             <div class="col text-center">
-              <p>20&deg;C</p>
-              <span>Feels like</span>
+              <p>{{ weather.feelsLike }}&deg;C</p>
+              <span>Hissedilen</span>
             </div>
             <div class="col text-center">
-              <p>55%</p>
-              <span>humidity</span>
+              <p>{{ weather.humidity }}%</p>
+              <span>Nem</span>
             </div>
           </div>
 
@@ -69,6 +70,8 @@
 export default {
   data() {
     return {
+      isDay:true,
+      citySearch: "",
       weather: {
         cityName: "İstanbul",
         country: "TR",
@@ -80,6 +83,32 @@ export default {
         humidity: "55",
       },
     };
+  },
+  methods: {
+    getWeather: async function() {
+      console.log(this.citySearch);
+      const key = "699440d767dae9efbea4cb119468ed1b";
+      const baseURL = `http://api.openweathermap.org/data/2.5/weather?q=${this.citySearch}&appid=${key}&units=metric`;
+      const response = await fetch(baseURL);
+      const data = await response.json();
+      console.log(data);
+      this.citySearch = "";
+      this.weather.cityName = data.name;
+      this.weather.country = data.sys.country;
+      this.weather.temperature = Math.round(data.main.temp);
+      this.weather.description = data.weather[0].description;
+      this.weather.lowTemp = Math.round(data.main.temp_min);
+      this.weather.highTemp = Math.round(data.main.temp_max);
+      this.weather.feelsLike = Math.round(data.main.feels_like);
+      this.weather.humidity = Math.round(data.main.humidity);
+
+      const timeOfDay = data.weather[0].icon;
+      if (timeOfDay.includes("n")) {
+        this.isDay=false;
+      }else{
+        this.isDay=true
+      }
+    },
   },
 };
 </script>
